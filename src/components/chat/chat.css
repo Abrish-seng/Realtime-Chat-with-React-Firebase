@@ -1,0 +1,113 @@
+.chat {
+  flex: 2;
+  border-left: 2px solid white;
+  border-right: 2px solid white;
+  overflow: scroll;
+  display: flex;
+  flex-direction: column;
+  /* top css */
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid white;
+    padding: 20px;
+  }
+  .user-profile {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #e1a9a5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .profile-initial {
+    text-transform: uppercase;
+  }
+  
+  .icons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-right: 20px;
+  }
+  /* center css */
+  .center {
+    display: flex;
+    padding: 20px;
+    overflow: scroll;
+    flex-direction: column;
+    flex: 1;
+    gap: 20px;
+    .message {
+      display: flex;
+      gap: 20px;
+      max-width: 70%;
+      &.own {
+        align-self: flex-end;
+        .text{
+            p{
+                background-color: rgb(245, 238, 238);
+            }
+            img{
+                max-width: 100%;
+                max-height: 200px;
+                border-radius: 10px;
+            }
+        }
+      }
+      p{
+        padding: 15px;
+        border-radius: 10px;
+        background-color: rgb(241, 241, 201);
+      }
+      span{
+        font-size: 13px;
+      }
+    }
+  }
+
+  /* bottom css */
+  .bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 2px solid white;
+    padding: 20px;
+    gap: 20px;
+    input {
+        border: none;
+        outline: none;
+        flex: 1;
+        padding: 15px;
+        border-radius: 10px;
+        font-size: 16px;
+      }
+      .send-btn {
+        padding: 10px 15px;
+        background-color: rgb(240, 170, 170);
+        border: none;
+        border-radius: 5px;
+        margin-left: 10px;
+        cursor: pointer;
+      }
+      .btn-emoji {
+        display: flex;
+        align-items: center;
+      }
+      .emoji{
+        position: relative;
+      }
+      .picker{
+        position: absolute;
+        bottom: 50px;
+        right: 200px;
+      }
+  }
+  
+}
