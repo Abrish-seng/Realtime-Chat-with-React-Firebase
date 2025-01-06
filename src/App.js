@@ -46,8 +46,10 @@ function App() {
   }, [fetchUserInfo]);
 
   useEffect(() => {
-    document.body.style.backgroundColor = theme;
-    // console.log(theme)
+    const container = document.querySelector('.container');
+    if (container) {
+      container.style.backgroundColor = theme; // Dynamically update container background
+    }
   }, [theme]);
 
   if (isloading) {
