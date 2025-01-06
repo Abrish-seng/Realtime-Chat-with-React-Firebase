@@ -1,0 +1,62 @@
+.chatlist{
+    flex: 1;
+    overflow: scroll;
+    .search{
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 20px;
+    }
+    .search-bar{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background-color: white;
+        padding: 10px;
+        border-radius: 10px;
+        flex: 1;
+    }
+    .search-text{
+      border: none;
+      outline: none;
+        
+    }
+    .add-new-chat{
+        flex: 1;
+        width: 30px;
+        height: 30px;
+    }
+
+    .list-item{
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 2px solid white;
+        cursor: pointer;
+    }
+    .list-avatar-image{
+        width: 40px;
+        height: 40px;
+        margin-right: 15px;
+        
+    }
+    .user-profile {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #dea183;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 24px;
+        font-weight: bold;
+      }
+      
+      .profile-initial {
+        text-transform: uppercase;
+      }
+      .items{
+        margin-left: 15px;
+      }
+}
