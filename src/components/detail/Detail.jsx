@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useRef } from "react";
 import "./detail.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -30,7 +30,9 @@ export default function Detail({ setTheme }) {
   const [loading, setLoading] = useState(true);
 
   const [userSlogan, setUserSlogan] = useState("Lorem ipsum dolor sit amet consectetur adipisicing"); // Default value
+  const sloganRef = useRef(null); // Ref for the contentEditable element
 
+  // Fetch the current slogan when the component mounts
   useEffect(() => {
     const fetchSlogan = async () => {
       if (!currentUser || !currentUser.id) return;
@@ -40,25 +42,20 @@ export default function Detail({ setTheme }) {
         const docSnap = await getDoc(userDocRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
-          setUserSlogan(data.slogan || ""); // Set the slogan if available
+          setUserSlogan(data.slogan || "No slogan set yet.");
         } else {
-          setUserSlogan("No slogan set yet."); // Default message if no slogan exists
+          setUserSlogan("No slogan set yet.");
         }
       } catch (error) {
         console.error("Error fetching slogan:", error);
         setUserSlogan("Error loading slogan.");
       } finally {
-        setLoading(false); // Set loading to false once fetching is done
+        setLoading(false);
       }
     };
 
     fetchSlogan();
   }, [currentUser]);
-
-  // Handle the editing of the slogan
-  const handleSloganChange = (event) => {
-    setUserSlogan(event.target.innerText); // Update the state with the new slogan text
-  };
 
   // Save the edited slogan to Firestore
   const saveSlogan = async () => {
@@ -70,13 +67,32 @@ export default function Detail({ setTheme }) {
     const userDocRef = doc(db, "users", currentUser.id);
 
     try {
-      await updateDoc(userDocRef, {
-        slogan: userSlogan, // Save the updated slogan to Firestore
-      });
+      await updateDoc(userDocRef, { slogan: userSlogan });
       console.log("Slogan updated successfully.");
     } catch (error) {
       console.error("Error updating slogan:", error);
     }
+  };
+
+  // Handle input change while preserving the cursor position
+  const handleSloganChange = (event) => {
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0); // Get the current cursor position
+    const startOffset = range.startOffset; // Save the cursor position
+
+    setUserSlogan(event.target.innerText); // Update the slogan
+
+    // Use a timeout to ensure React's DOM update completes before restoring the cursor
+    setTimeout(() => {
+      if (sloganRef.current) {
+        const textNode = sloganRef.current.firstChild;
+        const newRange = document.createRange();
+        newRange.setStart(textNode, startOffset);
+        newRange.setEnd(textNode, startOffset);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+      }
+    }, 0);
   };
 
   // const handleBlock = async () => {
@@ -149,6 +165,7 @@ export default function Detail({ setTheme }) {
         </div>
         <h2>{currentUser.username}</h2>
         <p
+          ref={sloganRef}
           contentEditable={true}
           onInput={handleSloganChange}  // Capture changes to the content
           suppressContentEditableWarning={true}  // Avoid React warnings for contentEditable
