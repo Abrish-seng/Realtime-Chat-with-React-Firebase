@@ -82,5 +82,11 @@
       .theme-button:hover {
         outline: 2px solid #000;
       }
-      
+      .profile-btn{
+        width: 70px;
+        height: 40px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+      }
 }

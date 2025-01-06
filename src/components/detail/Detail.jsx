@@ -27,33 +27,84 @@ export default function Detail({ setTheme }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [sharedPhotos, setSharedPhotos] = useState([]);
   const [isPhotosExpanded, setIsPhotosExpanded] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleBlock = async () => {
-    if (!user || !currentUser || !currentUser.id) {
-      console.error("Invalid user or currentUser data");
+  const [userSlogan, setUserSlogan] = useState("Lorem ipsum dolor sit amet consectetur adipisicing"); // Default value
+
+  useEffect(() => {
+    const fetchSlogan = async () => {
+      if (!currentUser || !currentUser.id) return;
+      const userDocRef = doc(db, "users", currentUser.id);
+
+      try {
+        const docSnap = await getDoc(userDocRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setUserSlogan(data.slogan || ""); // Set the slogan if available
+        } else {
+          setUserSlogan("No slogan set yet."); // Default message if no slogan exists
+        }
+      } catch (error) {
+        console.error("Error fetching slogan:", error);
+        setUserSlogan("Error loading slogan.");
+      } finally {
+        setLoading(false); // Set loading to false once fetching is done
+      }
+    };
+
+    fetchSlogan();
+  }, [currentUser]);
+
+  // Handle the editing of the slogan
+  const handleSloganChange = (event) => {
+    setUserSlogan(event.target.innerText); // Update the state with the new slogan text
+  };
+
+  // Save the edited slogan to Firestore
+  const saveSlogan = async () => {
+    if (!currentUser || !currentUser.id) {
+      console.error("Invalid user data");
       return;
     }
 
-    const userDocRef = doc(db, "users", currentUser?.id);
+    const userDocRef = doc(db, "users", currentUser.id);
 
     try {
-      const docSnapshot = await getDoc(userDocRef);
-      if (!docSnapshot.exists()) {
-        console.error("User document does not exist in Firestore.");
-        return;
-      }
-
-      console.log("Is Receiver Blocked:", isRecieverBlocked);
       await updateDoc(userDocRef, {
-        blocked: isRecieverBlocked ? arrayRemove(user.id) : arrayUnion(user.id),
+        slogan: userSlogan, // Save the updated slogan to Firestore
       });
-
-      console.log("Block status updated successfully.");
-      changeBlock(); // Ensure this updates the state correctly
+      console.log("Slogan updated successfully.");
     } catch (error) {
-      console.error("Error on blocking user:", error);
+      console.error("Error updating slogan:", error);
     }
   };
+
+  // const handleBlock = async () => {
+  //   if (!user || !currentUser || !currentUser.id) {
+  //     console.error("Invalid user or currentUser data");
+  //     return;
+  //   }
+
+  //   const userDocRef = doc(db, "users", currentUser?.id);
+
+  //   try {
+  //     const docSnapshot = await getDoc(userDocRef);
+  //     if (!docSnapshot.exists()) {
+  //       console.error("User document does not exist in Firestore.");
+  //       return;
+  //     }
+
+  //     console.log("Is Receiver Blocked:", isRecieverBlocked);
+  //     await updateDoc(userDocRef, {
+  //       blocked: isRecieverBlocked ? arrayRemove(user.id) : arrayUnion(user.id),
+  //     });
+
+  //     console.log("Block status updated successfully.");
+  //     changeBlock(); // Ensure this updates the state correctly
+  //   } catch (error) {
+  //     console.error("Error on blocking user:", error);
+  //   }
+  // };
 
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "chats", chatId), (docSnap) => {
@@ -97,7 +148,14 @@ export default function Detail({ setTheme }) {
           <span className="profile-initial">{getInitial()}</span>
         </div>
         <h2>{currentUser.username}</h2>
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing </p>
+        <p
+          contentEditable={true}
+          onInput={handleSloganChange}  // Capture changes to the content
+          suppressContentEditableWarning={true}  // Avoid React warnings for contentEditable
+        >
+          {userSlogan}
+        </p>
+        <button onClick={saveSlogan} className="profile-btn">Save</button>
       </div>
       <div className="info">
         <div className="option">
@@ -159,13 +217,13 @@ export default function Detail({ setTheme }) {
             </div>
           )}
         </div>
-        <button className="btn-block" onClick={handleBlock}>
+        {/* <button className="btn-block" onClick={handleBlock}>
           {isCurrentUserBlocked
             ? "You are blocked"
             : isRecieverBlocked
             ? "User blocked"
             : "Block user"}
-        </button>
+        </button> */}
         <button className="btn-block" onClick={() => auth.signOut()}>
           Logout
         </button>
