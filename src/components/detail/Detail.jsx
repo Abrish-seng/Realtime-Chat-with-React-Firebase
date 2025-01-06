@@ -14,16 +14,19 @@ import {
   doc,
   getDoc,
   updateDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import { useChatStore } from "../lib/useChatStore";
 import { useUserStore } from "../lib/userStore";
 
-export default function Detail({setTheme}) {
+export default function Detail({ setTheme }) {
   const { chatId, user, isCurrentUserBlocked, isRecieverBlocked, changeBlock } =
     useChatStore();
   // const currentUser = null;
   const { currentUser } = useUserStore(); // Correctly invoked as a function
   const [isExpanded, setIsExpanded] = useState(false);
+  const [sharedPhotos, setSharedPhotos] = useState([]);
+  const [isPhotosExpanded, setIsPhotosExpanded] = useState(false);
 
   const handleBlock = async () => {
     if (!user || !currentUser || !currentUser.id) {
@@ -52,11 +55,29 @@ export default function Detail({setTheme}) {
     }
   };
 
+  useEffect(() => {
+    const unSub = onSnapshot(doc(db, "chats", chatId), (docSnap) => {
+      const data = docSnap.data();
+      if (data && data.messages) {
+        const images = data.messages.filter((msg) => msg.img); // Extract images
+        setSharedPhotos(images);
+      }
+    });
+
+    return () => {
+      unSub();
+    };
+  }, [chatId]);
+
+  const togglePhotosExpand = () => {
+    setIsPhotosExpanded(!isPhotosExpanded); // Toggle expanded state for shared photos
+  };
+
   const toggleExpand = () => {
     setIsExpanded(!isExpanded); // Toggle expanded state
   };
 
-  const colors = ['#f5f5f5', '#ffebcd', '#d3f9d8', '#cce7ff', '#f8d7da']; // Popular colors
+  const colors = ["#f5f5f5", "#ffebcd", "#d3f9d8", "#cce7ff", "#f8d7da"]; // Popular colors
 
   const changeTheme = (color) => {
     setTheme(color); // Update theme in the parent component
@@ -92,19 +113,31 @@ export default function Detail({setTheme}) {
           </div>
         </div>
         <div className="option">
-          <div className="title">
-            <span>Shared Photos</span>
-            <FontAwesomeIcon icon={faAngleUp} className="icon-angle-arrow" />
+          <div className="title" onClick={togglePhotosExpand}>
+            <span>Shared photos</span>
+            <FontAwesomeIcon
+              icon={isPhotosExpanded ? faAngleUp : faAngleDown}
+              className="icon-angle-arrow"
+            />
           </div>
-          <div className="photos">
-            <div className="photoItem">
-              <div className="photoDetail">
-                <img src={smartAgri} alt="" />
-                <span>smart-agri.png</span>
-              </div>
+          {isPhotosExpanded && ( // This will render the photos only if isPhotosExpanded is true
+            <div className="photos">
+              {sharedPhotos.length > 0 ? (
+                sharedPhotos.map((message, index) => (
+                  <div className="photoItem" key={index}>
+                    <div className="photoDetail">
+                      <img src={message.img} alt={`Shared Image ${index}`} />
+                      <span>Image {index + 1}</span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p>No photos shared yet.</p>
+              )}
             </div>
-          </div>
+          )}
         </div>
+
         <div className="option">
           <div className="title" onClick={toggleExpand}>
             <span>change theams</span>
@@ -113,16 +146,18 @@ export default function Detail({setTheme}) {
               className="icon-angle-arrow"
             />
           </div>
-          { isExpanded && (<div className="theme-options">
-            {colors.map((color, index) => (
-              <button
-                key={index}
-                className="theme-button"
-                style={{ backgroundColor: color }}
-                onClick={() => changeTheme(color)}
-              ></button>
-            ))}
-          </div>)}
+          {isExpanded && (
+            <div className="theme-options">
+              {colors.map((color, index) => (
+                <button
+                  key={index}
+                  className="theme-button"
+                  style={{ backgroundColor: color }}
+                  onClick={() => changeTheme(color)}
+                ></button>
+              ))}
+            </div>
+          )}
         </div>
         <button className="btn-block" onClick={handleBlock}>
           {isCurrentUserBlocked
