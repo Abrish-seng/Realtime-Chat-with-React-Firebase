@@ -7,7 +7,6 @@ I want to build a chat application that includes the following features:
 - **Searching for Users**: A search functionality to find other users by name or unique identifiers.
 - **Adding Users**: Ability to send and accept friend requests to connect with others.
 - **Profile Management**: Options to update profile details such as name, picture, and bio.
-- **Voice/Video Calling**: Secure calling options to communicate with friends.
 - **User Listings and Details**: A list of users with detailed profiles for easy connection.
 
 ## How Do I Want to Build It?
@@ -80,6 +79,9 @@ I want to build a chat application that includes the following features:
    ```
 5. Open a pull request.
 
+
+### Author
+ ### Abrish-seng
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
