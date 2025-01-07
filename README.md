@@ -31,6 +31,21 @@ I want to build a chat application that includes the following features:
 6. **Testing**: Perform unit and integration testing for both frontend and backend.
 7. **Deployment**: Deploy the application using Firebase Hosting and conduct final testing on live servers.
 
+
+# Chat Application - login page
+
+This is a preview of the Chat Application:
+
+![Chat App Screenshot](./Capture.PNG)
+
+ 
+# Chat Application - chat page
+
+This is a preview of the Chat Application:
+
+![Chat App Screenshot](./chat.PNG)
+
+
 ## Installation and Setup
 
 1. Clone the repository:
